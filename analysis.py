@@ -173,6 +173,8 @@ class Worker(BaseManager):
             'target2017 ~ C(year) + total_dividend_amount + dividend_rate_by_sector + ending_shares + market_dividend_rate',
             data=df17).fit()
         print('RESULT REGRESSION TARGET17: ', reg_model17 .summary())
+
+        # correlation heatmap graph plot
         plt.show()
 
 Worker().analysis_data()
