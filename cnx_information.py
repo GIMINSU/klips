@@ -3,7 +3,7 @@ from config import config
 import pymysql
 
 class BaseManager:
-    def get_cnx(db_name, **kwargs):
+    def get_cnx(self, db_name, **kwargs):
         db = config['db'][db_name]
         engine = db['engine']
 
