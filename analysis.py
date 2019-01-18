@@ -52,7 +52,7 @@ class Worker(BaseManager):
         cross_shareholding_limited_group_dict['2017'] = [
             '삼성', '현대자동차', '에스케이', '엘지', '롯데', '포스코', '지에스', '한화', '현대중공업', '농협',
             '신세계', '케이티', '두산', '한진', '씨제이', '부영', '엘에스', '대림', '금호아시아나', '대우조선해양',
-            '미래에셋', '에쓰-오일', '현대백화점', '오씨아이', '효성', '영풍', '케이티앤지','한국투자금융', '대우건설',
+            '미래에셋', '에쓰-오일', '현대백화점', '오씨아이', '효성', '영풍', '케이티앤지', '한국투자금융', '대우건설',
             '하림', '케이씨씨'
         ]
 
@@ -130,11 +130,10 @@ class Worker(BaseManager):
                 analysis_dict[code]['total_2017'] = analysis_dict[code]['dividend_payoff_ratio']
             if analysis_dict[code]['total_2017'] > analysis_dict[code]['total_2015']:
                 analysis_dict[code]['target2017'] = 1
-            if analysis_dict[code]['total_2015'] is not None:
-                if analysis_dict[code]['total_2016'] > analysis_dict[code]['total_2015']:
-                    analysis_dict[code]['target2016'] = 1
+            if analysis_dict[code]['total_2016'] > analysis_dict[code]['total_2015']:
+                analysis_dict[code]['target2016'] = 1
 
-        print('ANALYSIS COMPANY COUNT:', len(analysis_dict.keys()))
+        print('ANALYSIS COMPANY COUNT: ', len(analysis_dict.keys()))
         # pprint.pprint(analysis_dict)
 
         # data 분석 실행
@@ -147,7 +146,7 @@ class Worker(BaseManager):
 
         seg1516 = df[df['year'] == 2015][['year', 'target2016']]
         seg1616 = df[df['year'] == 2016][['year', 'target2016']]
-        seg1517 = df[df['year'] == 2016][['year', 'target2017']]
+        seg1517 = df[df['year'] == 2015][['year', 'target2017']]
         seg1717 = df[df['year'] == 2017][['year', 'target2017']]
 
         df16 = df[df['year'] != 2017][['target2016', 'year', 'total_dividend_amount', 'dividend_payoff_ratio', 'dividend_rate_by_sector', 'ending_shares', 'market_dividend_rate']]
@@ -159,7 +158,7 @@ class Worker(BaseManager):
         ftest_year15_year16 = stats.f_oneway(seg1516['target2016'], seg1616['target2016'])
         ftest_year15_year17 = stats.f_oneway(seg1517['target2017'], seg1717['target2017'])
         print('DIVIDEND PAYOFF RATIO F-TSET(2015-2016) RESULT: ', ftest_year15_year16)
-        print('DIVIDEND PAYOFF RATIO F-TSET(2015-2015) RESULT: ', ftest_year15_year17)
+        print('DIVIDEND PAYOFF RATIO F-TSET(2015-2017) RESULT: ', ftest_year15_year17)
 
         # post hoc test
         tukey = pairwise_tukeyhsd(endog=df['target2016'], groups=df['year'], alpha=0.05)
@@ -167,19 +166,19 @@ class Worker(BaseManager):
 
         # regression
         total_dividend_amount_model = ols('dividend_payoff_ratio ~ C(year) + total_dividend_amount + dividend_rate_by_sector + ending_shares + market_dividend_rate', data=df).fit()
-        print('RESULT REGRESSION DIVIDEND_PAYOFF_RATIO: ', total_dividend_amount_model.summary())
+        print('RESULT REGRESSION DIVIDEND_PAYOFF_RATIO:\n', total_dividend_amount_model.summary())
 
         reg_model16 = ols(
             'target2016 ~ C(year) + total_dividend_amount + dividend_rate_by_sector + ending_shares + market_dividend_rate',
             data=df16).fit()
-        print('RESULT REGRESSION TARGET16: ', reg_model16 .summary())
+        print('RESULT REGRESSION TARGET16:\n', reg_model16 .summary())
 
         reg_model17 = ols(
             'target2017 ~ C(year) + total_dividend_amount + dividend_rate_by_sector + ending_shares + market_dividend_rate',
             data=df17).fit()
-        print('RESULT REGRESSION TARGET17: ', reg_model17 .summary())
+        print('RESULT REGRESSION TARGET17:\n', reg_model17 .summary())
 
         # correlation heatmap graph plot
-        plt.show()
+        # plt.show()
 
 Worker().analysis_data()
